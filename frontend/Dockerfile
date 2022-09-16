@@ -2,6 +2,6 @@ FROM node:lts-alpine
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY . .
-RUN npm install
+RUN yarn install
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["yarn", "start"]

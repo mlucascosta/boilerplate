@@ -1,40 +1,42 @@
 version: '3.8'
 services:
-  frontend:
+  boilerplate-frontend:
     build:
       context: ./frontend
-    container_name: frontend
+    container_name: boilerplate-frontend
     restart: unless-stopped
     stdin_open: true
     ports:
       - "3000:3000"
     volumes:      
-      - ./frontend:/app
+      - ./frontend/app:/app
     networks:
-      - app-network
+      - boilerplate
 
-  backend:
+  boilerplate-backend:
     build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: backend
+      context: ./backend
+    container_name: boilerplate-backend
     restart: unless-stopped
     tty: true
     working_dir: /var/www/html
     volumes:
-      - ./backend:/var/www/html
+      - type: volume
+        target: /var/www/html
+        read_only: false
     networks:
-      - app-network
+      - boilerplate
     depends_on:
-      - database
+      - boilerplate-database
     ports:
       - "8001:80"
       - "443:443"
       - "6001:6001"
 
-  database:
-    image: mariadb:latest
-    container_name: database
+  boilerplate-database:
+    build:
+      context: ./database
+    container_name: boilerplate-database
     restart: unless-stopped
     tty: true
     ports:
@@ -42,16 +44,16 @@ services:
     expose:
       - 3306
     volumes:
-      - ./.docker/database/data:/var/lib/mysql
+      - ./database/data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_USER: ${DB_USERNAME}
     networks:
-      - app-network
+      - boilerplate
 
 networks:
-  app-network:
-    name: app-network
+  boilerplate:
+    name: boilerplate
     driver: bridge
