@@ -30,8 +30,6 @@ services:
       - boilerplate-database
     ports:
       - "8001:80"
-      - "443:443"
-      - "6001:6001"
 
   boilerplate-database:
     build:
@@ -40,7 +38,7 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "3309:3306"
+      - "3306:3306"
     expose:
       - 3306
     volumes:
@@ -52,6 +50,23 @@ services:
       MYSQL_USER: ${DB_USERNAME}
     networks:
       - boilerplate
+
+  boilerplate-rabbitmq:
+    image: rabbitmq:3.11.0-management-alpine
+    container_name: boilerplate-rabbitmq
+    tty: true
+    restart: always
+    ports:
+        - "5672:5672"
+        - "15672:15672"
+    volumes:
+        - ./rabbitmq/data/:/var/lib/rabbitmq/
+        - ./rabbitmq/data/log/:/var/log/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    networks:
+        - boilerplate
 
 networks:
   boilerplate:
